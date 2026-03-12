@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Parkour Ultra</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { background: black; display: block; margin: auto; }
+        .score { position: absolute; color: white; font-family: Arial; font-size: 20px; }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <div class="score">Score: <span id="score">0</span></div>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const playerSize = 30;
+        let score = 0;
+
+        const player = { x: 100, y: canvas.height - playerSize, width: playerSize, height: playerSize, color: 'cyan', dy: 0, jumping: false }; 
+        const platforms = [{ x: 0, y: canvas.height - 20, width: canvas.width, height: 20 }];
+        const gravity = 0.6;
+
+        function drawPlayer() {
+            ctx.fillStyle = player.color;
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+        }
+
+        function drawPlatforms() {
+            ctx.fillStyle = 'magenta';
+            platforms.forEach(platform => {
+                ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+            });
+        }
+
+        function jump() {
+            if (!player.jumping) {
+                player.dy = -10;
+                player.jumping = true;
+            }
+        }
+
+        function handleInput(e) {
+            switch(e.key) {
+                case 'ArrowLeft':
+                case 'a':
+                    player.x -= 5;
+                    break;
+                case 'ArrowRight':
+                case 'd':
+                    player.x += 5;
+                    break;
+                case 'ArrowUp':
+                case 'W':
+                    jump();
+                    break;
+            }
+        }
+
+        function update() {
+            player.dy += gravity;
+            player.y += player.dy;
+
+            if (player.y + player.height >= canvas.height) {
+                player.y = canvas.height - player.height;
+                player.dy = 0;
+                player.jumping = false;
+                score++;
+                document.getElementById('score').innerText = score;
+            }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawPlatforms();
+            drawPlayer();
+        }
+
+        window.addEventListener('keydown', handleInput);
+        setInterval(update, 1000 / 60);
+    </script>
+</body>
+</html>
