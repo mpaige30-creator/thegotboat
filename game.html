@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Parkour Ultra</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: black;
+        }
+        canvas {
+            display: block;
+            background: linear-gradient(to right, #00f, #ff00ff);
+            border: 2px solid #fff;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const context = canvas.getContext('2d');
+        const playerSize = 50;
+        let playerX = canvas.width / 2;
+        let playerY = canvas.height - playerSize - 10;
+        let gravity = 0.5;
+        let jumpStrength = 10;
+        let velocityY = 0;
+        const keys = {};
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        function drawPlayer() {
+            context.fillStyle = 'cyan';
+            context.fillRect(playerX, playerY, playerSize, playerSize);
+        }
+
+        function gameLoop() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (keys['ArrowLeft']) {
+                playerX -= 5;
+            }
+            if (keys['ArrowRight']) {
+                playerX += 5;
+            }
+            if (keys['Space'] && playerY >= canvas.height - playerSize - 10) {
+                velocityY = -jumpStrength;
+            }
+
+            // Gravity
+            velocityY += gravity;
+            playerY += velocityY;
+
+            // Prevent falling through the ground
+            if (playerY + playerSize > canvas.height - 10) {
+                playerY = canvas.height - playerSize - 10;
+                velocityY = 0;
+            }
+
+            drawPlayer();
+            requestAnimationFrame(gameLoop);
+        }
+
+        window.addEventListener('keydown', (event) => {
+            keys[event.key] = true;
+        });
+        window.addEventListener('keyup', (event) => {
+            keys[event.key] = false;
+        });
+
+        gameLoop();
+    </script>
+</body>
+</html>
